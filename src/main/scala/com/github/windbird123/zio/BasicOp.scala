@@ -31,5 +31,8 @@ object BasicOp {
 
     val zipL: ZIO[Console, Throwable, String] = a <* c
     Runtime.default.unsafeRun[Throwable, String](zipL) // A
+
+    val zipF: ZIO[Console, Throwable, Int] = a *> b.either *> c
+    Runtime.default.unsafeRun[Throwable, Int](zipF) // a b c
   }
 }
