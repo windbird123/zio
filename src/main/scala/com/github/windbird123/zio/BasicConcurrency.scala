@@ -1,7 +1,8 @@
 package com.github.windbird123.zio
 
 import zio._
-import zio.console._
+
+// App provides a DefaultRuntime, which contains a Console
 object BasicConcurrency extends App {
   override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
     def fib(n: Long): UIO[Long] =
@@ -25,7 +26,7 @@ object BasicConcurrency extends App {
 
     val program = for {
       msg <- awaitFiber
-      _ <- putStrLn(msg)
+      _ <- console.putStrLn(msg)
     } yield ()
 
     // Parallelism
