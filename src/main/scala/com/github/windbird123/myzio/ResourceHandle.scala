@@ -1,4 +1,4 @@
-package com.github.windbird123.zio
+package com.github.windbird123.myzio
 
 import zio._
 
