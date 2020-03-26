@@ -33,25 +33,26 @@ object UserRepo {
     })
 }
 
-object Logging {
-  trait Service {
-    def info(s: String): UIO[Unit]
-    def error(s: String): UIO[Unit]
-  }
+// 아래처럼 trait 를 object 안에서 밖으로 빼는건 어떨까?
+trait Logging {
+  def info(s: String): UIO[Unit]
+  def error(s: String): UIO[Unit]
+}
 
+object Logging {
   // accessor
-  def info(s: String): ZIO[Has[Logging.Service], Nothing, Unit] =
+  def info(s: String): ZIO[Has[Logging], Nothing, Unit] =
     ZIO.accessM(_.get.info(s))
 
-  def error(s: String): ZIO[Has[Logging.Service], Nothing, Unit] =
+  def error(s: String): ZIO[Has[Logging], Nothing, Unit] =
     ZIO.accessM(_.get.error(s))
 
   // instance
   import zio.console.Console
-  val consoleLogger: ZLayer[Console, Nothing, Has[Logging.Service]] =
+  val consoleLogger: ZLayer[Console, Nothing, Has[Logging]] =
     ZLayer.fromFunction(
       console =>
-        new Service {
+        new Logging {
           override def info(s: String): UIO[Unit] =
             console.get.putStrLn(s"info - $s")
 
@@ -65,7 +66,7 @@ object ModuleTest {
   def main(args: Array[String]): Unit = {
     val user = User(123, "abc")
     val makeUser
-      : ZIO[Has[Logging.Service] with Has[UserRepo.Service], DBError, Unit] =
+      : ZIO[Has[Logging] with Has[UserRepo.Service], DBError, Unit] =
       for {
         _ <- Logging.info(s"insert user")
         _ <- UserRepo.createUser(user)
@@ -73,10 +74,10 @@ object ModuleTest {
       } yield ()
 
     import zio.console._
-    val horizontalLayer: ZLayer[Console, Nothing, Has[Logging.Service] with Has[
+    val horizontalLayer: ZLayer[Console, Nothing, Has[Logging] with Has[
       UserRepo.Service
     ]] = Logging.consoleLogger ++ UserRepo.inMemory
-    val fullLayer: Layer[Nothing, Has[Logging.Service] with Has[
+    val fullLayer: Layer[Nothing, Has[Logging] with Has[
       UserRepo.Service
     ]] = Console.live >>> horizontalLayer
 
