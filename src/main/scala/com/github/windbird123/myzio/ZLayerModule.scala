@@ -34,6 +34,7 @@ object UserRepo {
 }
 
 // 아래처럼 trait 를 object 안에서 밖으로 빼는건 어떨까?
+// UserRepo 처럼 안으로 넣는게 나을것 같다..
 trait Logging {
   def info(s: String): UIO[Unit]
   def error(s: String): UIO[Unit]
