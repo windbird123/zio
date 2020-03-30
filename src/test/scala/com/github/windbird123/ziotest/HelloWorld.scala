@@ -48,4 +48,20 @@ object HelloWorldSpec extends DefaultRunnableSpec {
     ) @@ before(zio.console.putStrLn("starts test =========")) @@ after(
       zio.console.putStrLn("finish test =====")
     )
+
+  ////////////////////////////////////////////////////////////////////////////////////
+  val clockSuite = suite("clock suite") (
+    testM("time is non-zero") {
+      assertM(zio.clock.nanoTime)(isGreaterThan(0L))
+    }
+  )
+
+  val assertionForString = Assertion.containsString("Foo") && Assertion.endsWithString("Bar")
+
+
+  import zio.test.Assertion.{isRight, isSome,equalTo, hasField}
+  test("Check assertions") {
+    assert(Right(Some(2)))(isRight(isSome(equalTo(2))))
+  }
+
 }
