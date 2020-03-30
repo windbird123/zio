@@ -21,7 +21,7 @@ object UserRepo {
 
   // instance
   // type Layer[+E, +ROut] = ZLayer[Any, E, ROut]
-  val inMemory: Layer[Nothing, Has[UserRepo.Service]] =
+  val inMemory: ZLayer[Any, Nothing, Has[UserRepo.Service]] =
     ZLayer.succeed(new Service {
       override def getUser(userId: Int): IO[DBError, Option[User]] = {
         val user = User(456, "def")
@@ -66,8 +66,7 @@ object Logging {
 object ModuleTest {
   def main(args: Array[String]): Unit = {
     val user = User(123, "abc")
-    val makeUser
-      : ZIO[Has[Logging] with Has[UserRepo.Service], DBError, Unit] =
+    val makeUser: ZIO[Has[Logging] with Has[UserRepo.Service], DBError, Unit] =
       for {
         _ <- Logging.info(s"insert user")
         _ <- UserRepo.createUser(user)
@@ -78,7 +77,7 @@ object ModuleTest {
     val horizontalLayer: ZLayer[Console, Nothing, Has[Logging] with Has[
       UserRepo.Service
     ]] = Logging.consoleLogger ++ UserRepo.inMemory
-    val fullLayer: Layer[Nothing, Has[Logging] with Has[
+    val fullLayer: ZLayer[Any, Nothing, Has[Logging] with Has[
       UserRepo.Service
     ]] = Console.live >>> horizontalLayer
 
@@ -87,10 +86,9 @@ object ModuleTest {
   }
 }
 
-
 object HasTest {
   trait A {
-    def f() : Unit = {}
+    def f(): Unit = {}
   }
 
   trait B {
@@ -103,7 +101,7 @@ object HasTest {
     val b = new B {}
     val hb = Has(b)
 
-    val hc : Has[B] with Has[A] = hb ++ ha
+    val hc: Has[B] with Has[A] = hb ++ ha
     hc.get[A].f()
     hc.get[B].g()
   }

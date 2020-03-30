@@ -27,12 +27,18 @@ object BasicOp {
     }
 
     val zipR: ZIO[Console, Throwable, Int] = a *> c
-    Runtime.default.unsafeRun[Throwable, Int](zipR) // 3
+    Runtime.default.unsafeRun[Throwable, Int](
+      zipR.provideLayer(console.Console.live)
+    ) // 3
 
     val zipL: ZIO[Console, Throwable, String] = a <* c
-    Runtime.default.unsafeRun[Throwable, String](zipL) // A
+    Runtime.default.unsafeRun[Throwable, String](
+      zipL.provideLayer(console.Console.live)
+    ) // A
 
     val zipF: ZIO[Console, Throwable, Int] = a *> b.either *> c
-    Runtime.default.unsafeRun[Throwable, Int](zipF) // a b c
+    Runtime.default.unsafeRun[Throwable, Int](
+      zipF.provideLayer(console.Console.live)
+    ) // a b c
   }
 }

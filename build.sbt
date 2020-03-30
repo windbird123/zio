@@ -16,10 +16,15 @@ scalacOptions := Seq(
   "-language:implicitConversions"
 )
 
+val zioVersion = "1.0.0-RC18"
+
 libraryDependencies ++= Seq(
-  "dev.zio" %% "zio" % "1.0.0-RC18-2",
+  "dev.zio" %% "zio" % zioVersion,
+  "dev.zio" %% "zio-test" % zioVersion % "test",
+  "dev.zio" %% "zio-test-sbt" % zioVersion % "test",
   "org.typelevel" %% "simulacrum" % "1.0.0"
 )
+testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
 addCompilerPlugin(
