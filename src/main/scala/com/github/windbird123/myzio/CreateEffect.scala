@@ -24,7 +24,11 @@ object CreateEffect extends App {
     ZIO.fromEither(Left(1)) // IO[Int, Nothing]
 
     ZIO.fromTry(Try(1 / 0))
+
+
+    // ZIO.access 와 동일하다. ZIO.access 를 사용하자
     ZIO.fromFunction((i: Int) => i * i) // ZIO[Int, Nothing, Int]
+    ZIO.access((i: Int) => i * i)
 
     lazy val future = Future.successful("Hello")
     // Task[String]
@@ -47,6 +51,7 @@ object CreateEffect extends App {
         UIO.effectTotal(socket.close())
       )
 
+    // zio.blocking.blocking 이걸 더 자주 사용하게 될 것 같다.. (이미 존재하는 zio obj 에 적용하는 ..)
     val task = Task.effect(io.Source.fromURL("http://..."))
     zio.blocking.blocking(task) // effect will be executed on the blocking thread pool
 
