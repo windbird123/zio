@@ -10,6 +10,9 @@ object BasicOp {
     // zip operates sequentially: the effect on the left side is executed before the effect on the right side.
     IO.succeed("4").zip(IO.succeed(2)) // UIO[(String, Int)]
 
+    IO.succeed(4).zipWith(IO.succeed(2))(_ + _)  // zipWith 는 ZIO.mapN 과 같다.
+    ZIO.mapN(IO.succeed(4), IO.succeed(2))(_ + _) // for comprehension 으로도 표현할 수 있다.
+
     putStrLn("What is your name?").zipRight(getStrLn)
     putStrLn("What is your name?") *> getStrLn
 

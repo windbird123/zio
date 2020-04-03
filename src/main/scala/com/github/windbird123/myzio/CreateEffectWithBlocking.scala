@@ -9,7 +9,7 @@ import scala.concurrent.Future
 import scala.io.StdIn
 import scala.util.Try
 
-object CreateEffect extends App {
+object CreateEffectWithBlocking extends App {
   override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
     ZIO.succeed(10)
     Task.succeed("a")
@@ -24,7 +24,6 @@ object CreateEffect extends App {
     ZIO.fromEither(Left(1)) // IO[Int, Nothing]
 
     ZIO.fromTry(Try(1 / 0))
-
 
     // ZIO.access 와 동일하다. ZIO.access 를 사용하자
     ZIO.fromFunction((i: Int) => i * i) // ZIO[Int, Nothing, Int]
@@ -42,6 +41,7 @@ object CreateEffect extends App {
       .refineToOrDie[IOException] // if fatal => die, else refineTo IOException
     ZIO.effectTotal(println("Hi")) // UIO[Unit]
 
+    // blocking thread pool 에서 실행된다는 의미이지 async 하다는 것은 아니다.
     val blockingEffect = zio.blocking.effectBlocking(Thread.sleep(1000L))
     zio.blocking.effectBlockingInterrupt(blockingEffect)
 

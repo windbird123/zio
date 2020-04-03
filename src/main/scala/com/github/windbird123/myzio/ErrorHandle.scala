@@ -11,6 +11,13 @@ object ErrorHandle extends App {
     // opposite of either
     val zAbsolve: IO[String, Int] = zEither.absolve
 
+
+    ///////////////////////////////////////////////////////////////////////
+    // tapError 와 orElse 를 적극적으로 사용하자. 끝판왕은 foldM
+    // error recover 를 위해서는 catchSome, catchAll 사용
+    ///////////////////////////////////////////////////////////////////////
+    IO.fail("error").tapError(msg => console.putStrLn(msg)) // msg 를 출력하고 결과는 에러 그대로 보내준다.
+
     // catchAll
     val catchAllTest: Task[File] = Task
       .effect(new File("first.txt"))
