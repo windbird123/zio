@@ -22,7 +22,9 @@ libraryDependencies ++= Seq(
   "dev.zio" %% "zio" % zioVersion,
   "dev.zio" %% "zio-test" % zioVersion % "test",
   "dev.zio" %% "zio-test-sbt" % zioVersion % "test",
-  "org.typelevel" %% "simulacrum" % "1.0.0"
+  "org.typelevel" %% "simulacrum" % "1.0.0",
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
+  "ch.qos.logback" % "logback-classic" % "1.2.3"
 )
 testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
 

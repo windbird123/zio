@@ -1,7 +1,11 @@
 package com.github.windbird123.practice
 
-sealed case class StepError(code: Int, message: String)
+sealed trait StepError {
+  val code: Int
+  val message: String
+}
 
-object ER01 extends StepError(404, "NOT FOUND")
-
-
+case object ER01 extends StepError {
+  override val code: Int       = 404
+  override val message: String = "NOT FOUND"
+}

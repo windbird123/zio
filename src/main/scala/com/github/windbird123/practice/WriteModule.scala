@@ -10,7 +10,7 @@ object WriteModule {
   def write(box: Box): ZIO[Has[Service], StepError, Unit] =
     ZIO.accessM(_.get[Service].write(box))
 
-  val real: ZLayer[Has[CuveConnection], Nothing, Has[Service]] =
+  val live: ZLayer[Has[CuveConnection], Nothing, Has[Service]] =
     ZLayer.fromFunction { env =>
       new Service {
         override def write(box: Box): IO[StepError, Unit] =
