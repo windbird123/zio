@@ -1,6 +1,51 @@
 package com.github.windbird123.overview
 
+import com.typesafe.scalalogging.LazyLogging
 import zio._
+
+object FiberFork extends App with LazyLogging {
+
+  val ioA = IO.effect[String] {
+    logger.info("A start")
+    Thread.sleep(3000L)
+    logger.info("A end")
+    "A"
+  }
+
+  val ioB = IO.effect[String] {
+    logger.info("B start")
+    Thread.sleep(2000L)
+    logger.info("B end")
+    "B"
+  }
+
+  // myProg 형태도 좋지만 fiber 를 직접 쓰지 않는 myProg4 가 Best?
+  val myProg = for {
+    fiberA <- ioA.fork
+    fiberB <- ioB.fork
+    a      <- fiberA.join
+    b      <- fiberB.join
+  } yield a + b
+
+  val myProg2 = for {
+    fiberA <- ioA.fork
+    fiberB <- ioB.fork
+    fiber  = fiberA.orElse(fiberB)
+    x      <- fiber.join
+  } yield x
+
+  val myProg3 = for {
+    fiberA <- ioA.fork
+    fiberB <- ioB.fork
+    fiber  = fiberA.zipWith(fiberB)(_ + _)
+    x      <- fiber.join
+  } yield x
+
+  val myProg4: ZIO[Any, Throwable, String] = ZIO.mapParN(ioA, ioB)(_ + _)
+
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = myProg4.fold(_ => 1, _ => 0)
+
+}
 
 // App provides a DefaultRuntime, which contains a Console
 object ConcurrencyFiber extends App {
@@ -20,13 +65,13 @@ object ConcurrencyFiber extends App {
 
     // join fiber
     val awaitFiber = for {
-      fiber <- IO.succeed("Hi").fork
+      fiber   <- IO.succeed("Hi").fork
       message <- fiber.join
     } yield message
 
     val program = for {
       msg <- awaitFiber
-      _ <- console.putStrLn(msg)
+      _   <- console.putStrLn(msg)
     } yield ()
 
     /////////////////////////////////////////////////////////////////////////////
@@ -48,13 +93,12 @@ object ConcurrencyFiber extends App {
   }
 }
 
-
 object FibTest extends zio.App {
-  def fib(n: Long): UIO[Long] = if (n <= 1) UIO.effectTotal(n) else fib(n-1).zipWith(fib(n-2))(_ + _)
+  def fib(n: Long): UIO[Long] = if (n <= 1) UIO.effectTotal(n) else fib(n - 1).zipWith(fib(n - 2))(_ + _)
 
   override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
     val p = for {
-      f <- fib(40)  // fib(50) 만 되어도 힘들어 한다.
+      f <- fib(40) // fib(50) 만 되어도 힘들어 한다.
       _ <- zio.console.putStrLn(f.toString)
     } yield ()
 
@@ -62,14 +106,13 @@ object FibTest extends zio.App {
   }
 }
 
-
 object FactorialTest extends zio.App {
-  def fact(n: BigInt): UIO[BigInt] = if (n <= 1) UIO.effectTotal(1) else UIO.effectTotal(n).zipWith(fact(n-1))(_ * _)
+  def fact(n: BigInt): UIO[BigInt] = if (n <= 1) UIO.effectTotal(1) else UIO.effectTotal(n).zipWith(fact(n - 1))(_ * _)
 
   override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
     val p = for {
-       f <- fact(50000)
-       _ <- zio.console.putStrLn(f.toString)
+      f <- fact(50000)
+      _ <- zio.console.putStrLn(f.toString)
     } yield ()
 
     p.as(0)
