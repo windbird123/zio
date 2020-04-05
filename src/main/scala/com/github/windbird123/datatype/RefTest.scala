@@ -15,7 +15,7 @@ object RefTest extends zio.App with LazyLogging {
   // update a ref
   val myProg2: ZIO[Any, Nothing, UIO[Unit]] = Ref.make(0).map(ref => ref.update(_ + 1))
 
-  // state transformer
+  // state transformer (마치 state monad 같은)
   val myProg3: ZIO[Console, Nothing, Unit] = {
     val stateTransition = (state: Int) => (s"result: $state", state + 1)
     for {
