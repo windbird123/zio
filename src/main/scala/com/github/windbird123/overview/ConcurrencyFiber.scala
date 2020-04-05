@@ -19,7 +19,24 @@ object FiberFork extends App with LazyLogging {
     "B"
   }
 
+  def myFunc(s: String) = blocking.effectBlocking {
+    logger.info("My Func start")
+    Thread.sleep(2000L)
+    logger.info("My Func end")
+    s"Hi: $s"
+  }
+
+  def myFunc2(s: String) = blocking.effectBlocking {
+    logger.info("My Func2 start")
+    Thread.sleep(2000L)
+    logger.info("My Func2 end")
+    s"Hello: $s"
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
   // myProg 형태도 좋지만 fiber 를 직접 쓰지 않는 myProg4 가 Best?
+  // 그러나 myProg5 처럼 앞의 계산결과가 뒤에 parallel 하게 쓰여질 경우는 fiber 를 직접 써야 할 것 같다.
+  //////////////////////////////////////////////////////////////////////////////
   val myProg = for {
     fiberA <- ioA.fork
     fiberB <- ioB.fork
@@ -43,8 +60,15 @@ object FiberFork extends App with LazyLogging {
 
   val myProg4: ZIO[Any, Throwable, String] = ZIO.mapParN(ioA, ioB)(_ + _)
 
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = myProg4.fold(_ => 1, _ => 0)
+  val myProg5 = for {
+    s      <- ioA
+    fiberA <- myFunc(s).fork
+    fiberB <- myFunc2(s).fork
+    a      <- fiberA.join
+    b      <- fiberB.join
+  } yield a + b
 
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = myProg5.fold(_ => 1, _ => 0)
 }
 
 // App provides a DefaultRuntime, which contains a Console
