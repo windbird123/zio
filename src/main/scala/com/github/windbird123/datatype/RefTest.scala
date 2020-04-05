@@ -23,11 +23,11 @@ object RefTest extends zio.App with LazyLogging {
       freshVar = r.modify(stateTransition)  // S => (A, S)
 
       v1 <- freshVar
-      _  <- console.putStrLn(s"v1=$v1")
+      _  <- console.putStrLn(s"v1=$v1") // v1=result: 0
       v2 <- freshVar
-      _  <- console.putStrLn(s"v2=$v2")
+      _  <- console.putStrLn(s"v2=$v2") // v2=result: 1
       v3 <- freshVar
-      _  <- console.putStrLn(s"v3=$v3")
+      _  <- console.putStrLn(s"v3=$v3") // v3=result: 2
     } yield ()
   }
 
