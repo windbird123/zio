@@ -20,6 +20,7 @@ val zioVersion = "1.0.0-RC18"
 
 libraryDependencies ++= Seq(
   "dev.zio" %% "zio" % zioVersion,
+  "dev.zio" %% "zio-streams" % zioVersion,
   "dev.zio" %% "zio-test" % zioVersion % "test",
   "dev.zio" %% "zio-test-sbt" % zioVersion % "test",
   "org.typelevel" %% "simulacrum" % "1.0.0",

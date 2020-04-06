@@ -40,16 +40,19 @@ object QueueTest extends zio.App {
   // Queue#contramap
   // A type 넣은(offer) 다음 꺼낼(take) 때는 B type 을 가져올 수 있다.
   // Queue#contramap(f: A => B)
-  // 넣을 때는 String, 꺼낼 때는 Int 로 가져오기 위해  (s: String) => s.length
-  // "abcde" 를 넣었는데 꺼내 보니 5
-  // ==> contramap 이라는 이름이 적당한 것이지 의문???
   //////////////////////////////////////////////////////////////////////////////////
   val contraQueue = for {
-    queue    <- Queue.bounded[Int](3)
-    lenQueue = queue.contramap((s: String) => s.length)
-    _        <- lenQueue.offer("abcde")
-    out      <- lenQueue.take // out is Int type
-    _        <- console.putStrLn(out.toString) // 5
+    intQueue       <- Queue.bounded[Int](3) // Int 타입의 queue 생성
+
+    // String 타입의 queue 를 생성하는데, intQueue 를 이용해 꺼낼 때는 Int 타입을 가져오도록 ..
+    lenQueue100 = intQueue.contramap((s: String) => s.length).map(_ + 100)
+  } yield lenQueue100
+
+  val contraQueueTest = for {
+    queue <- contraQueue
+    _     <- queue.offer("abcde")
+    out   <- queue.take // out is Int type
+    _     <- console.putStrLn(out.toString) // 105
   } yield ()
 
   import zio.duration._
@@ -76,6 +79,6 @@ object QueueTest extends zio.App {
   } yield ()
 
   override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] =
-    contraQueue *> UIO.succeed(0)
+    contraQueueTest *> UIO.succeed(0)
 //    timeQueueTest *> UIO.succeed(0)
 }
