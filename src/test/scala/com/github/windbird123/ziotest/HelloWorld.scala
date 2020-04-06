@@ -8,6 +8,8 @@ import zio.test._
 import zio.test.environment.TestConsole
 import zio.{ZIO, console}
 
+// https://github.com/zio/zio-intellij/issues/29 이슈
+// java8 을 쓸려면 zio 1.0.0-RC18 버전을 써야 한다
 object HelloWorld {
   def sayHello: ZIO[Console, Nothing, Unit] = console.putStrLn("Hello, World!")
 }
