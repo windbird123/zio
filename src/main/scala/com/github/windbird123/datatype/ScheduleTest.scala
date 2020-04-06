@@ -34,7 +34,8 @@ object ScheduleTest extends zio.App with LazyLogging {
   // Retry only when a specific exception occurs
   import scala.concurrent.TimeoutException
 
-  val whileTimeout = Schedule.spaced(2.seconds) && Schedule.doWhile[Exception] {
+  // 이걸 많이 쓰게 될 것 같다.
+  val whileTimeout = Schedule.spaced(2.seconds) && Schedule.recurs(3) && Schedule.doWhile[Exception] {
     case _: TimeoutException => true
     case _                   => false
   }
