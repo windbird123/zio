@@ -52,7 +52,7 @@ object CreateEffectWithBlocking extends App {
       )
 
     // zio.blocking.blocking 이걸 더 자주 사용하게 될 것 같다.. (이미 존재하는 zio obj 에 적용하는 ..)
-    val task = Task.effect(io.Source.fromURL("http://..."))
+    val task = Task.effect(scala.io.Source.fromURL("http://..."))
     zio.blocking.blocking(task) // effect will be executed on the blocking thread pool
 
     ZIO.succeed(0)

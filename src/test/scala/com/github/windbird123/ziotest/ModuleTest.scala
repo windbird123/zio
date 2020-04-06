@@ -12,7 +12,7 @@ object Roy {
   def getCuve(id: Int): ZIO[Has[Roy.Service], String, Double] =
     ZIO.accessM(_.get[Roy.Service].getCuve(id))
 
-  val real: ZLayer[Any, Nothing, Has[Roy.Service]] =
+  val live: ZLayer[Any, Nothing, Has[Roy.Service]] =
     ZLayer.succeed(new Service {
       override def getCuve(id: Int): IO[String, Double] = {
         IO.succeed(id + 1.0)
@@ -29,7 +29,7 @@ object ServiceLogicBetweenModules {
 
 object AppMain extends zio.App {
   override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
-    val layer = Roy.real ++ console.Console.live
+    val layer = Roy.live ++ console.Console.live
     ServiceLogicBetweenModules.roy.provideLayer(layer).fold(_ => 1, _ => 0)
   }
 }
@@ -40,8 +40,8 @@ object ModuleTestSpec extends DefaultRunnableSpec {
     suite("all tests")(roySuite)
 
   val roySuite = suite("module test")(testM("module ") {
-    // 필요데 따라 Roy.real 대신에 test 용을 구현해 대체할 수 있다.
-    val layer = Roy.real ++ console.Console.live
+    // 필요에 따라 Roy.live 대신에 test 용을 구현해 대체할 수 있다.
+    val layer = Roy.live ++ console.Console.live
     for {
       output <- ServiceLogicBetweenModules.roy.provideLayer(layer)
     } yield assert(output)(equalTo(4.0))

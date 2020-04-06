@@ -14,7 +14,7 @@ object ResourceHandle extends App {
     Task
       .effect(new FileInputStream("/naver/a.txt"))
       .bracket(stream => URIO.effectTotal(stream.close())) { stream =>
-        Task.effect(io.Source.fromInputStream(stream, io.Codec.UTF8.name))
+        Task.effect(scala.io.Source.fromInputStream(stream, scala.io.Codec.UTF8.name))
       }
 
     ZIO.succeed(0)
