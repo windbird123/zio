@@ -20,14 +20,14 @@ object FiberFork extends App with LazyLogging {
   }
 
   def myFunc(s: String) = blocking.effectBlocking {
-    logger.info("My Func start")
+    logger.info("My Func start, tid=" + Thread.currentThread().getId)
     Thread.sleep(2000L)
     logger.info("My Func end")
     s"Hi: $s"
   }
 
   def myFunc2(s: String) = blocking.effectBlocking {
-    logger.info("My Func2 start")
+    logger.info("My Func2 start, tid=" + Thread.currentThread().getId)
     Thread.sleep(2000L)
     logger.info("My Func2 end")
     s"Hello: $s"
@@ -58,7 +58,7 @@ object FiberFork extends App with LazyLogging {
     x      <- fiber.join
   } yield x
 
-  val myProg4: ZIO[Any, Throwable, String] = ZIO.mapParN(ioA, ioB)(_ + _)
+  val myProg4: ZIO[Any, Throwable, String] = ZIO.mapParN(ioA, ioB)(_ + _) // ioA.zipWithPar(ioB)(_ + _)
 
   val myProg5 = for {
     s      <- ioA
@@ -66,6 +66,14 @@ object FiberFork extends App with LazyLogging {
     fiberB <- myFunc2(s).fork
     a      <- fiberA.join
     b      <- fiberB.join
+  } yield {
+    logger.info("yield output") // run in different thread ?
+    a + b
+  }
+
+  val myProg6 = for {
+    a <- blocking.blocking(ioA) // blocking thread pool 에서 실행될 뿐이지 async 인 건 아니다.
+    b <- blocking.blocking(ioB)
   } yield a + b
 
   override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = myProg5.fold(_ => 1, _ => 0)
