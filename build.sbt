@@ -25,6 +25,7 @@ libraryDependencies ++= Seq(
   "dev.zio"                    %% "zio-test-sbt"   % zioVersion % "test",
   "org.typelevel"              %% "simulacrum"     % "1.0.0",
   "com.typesafe.scala-logging" %% "scala-logging"  % "3.9.2",
+  "org.slf4j"                  % "jcl-over-slf4j"  % "1.7.26",
   "ch.qos.logback"             % "logback-classic" % "1.2.3",
   "org.scalaj"                 %% "scalaj-http"    % "2.4.2"
 )
