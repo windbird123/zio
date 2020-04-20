@@ -19,11 +19,11 @@ object Main extends App {
     : ZLayer[Has[CuveConnection] with Has[Config], Nothing, Has[WriteModule.Service] with Has[ReadModule.Service]] =
     WriteModule.live ++ ReadModule.live
 
-  val baseLayer: ZLayer[Any, Nothing, Has[Config] with Has[CuveConnection]] =
+  val bottomLayer: ZLayer[Any, Nothing, Has[Config] with Has[CuveConnection]] =
     ZLayer.succeed(cuveConnection) ++ ZLayer.succeed(config)
 
   val fullLayer: ZLayer[Any, Nothing, Has[WriteModule.Service] with Has[ReadModule.Service]] =
-    baseLayer >>> horizontalLayer
+    bottomLayer >>> horizontalLayer
 
   val myProg: URIO[Any, Int] = readAndWrite.provideLayer(fullLayer).fold(_ => 1, _ => 0)
 }
