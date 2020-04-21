@@ -17,21 +17,23 @@ object RefTest extends zio.App with LazyLogging {
 
   // state transformer (마치 state monad 같은)
   val myProg3: ZIO[Console, Nothing, Unit] = {
-    val stateTransition = (state: Int) => (s"result: $state", state + 3)
+    val stateTransition  = (state: Int) => (s"result: $state", state + 3)
     val stateTransition2 = (state: Int) => (s"result: $state", state * 2)
-    for {
-      r        <- Ref.make(1) // initial value
-      freshVar = r.modify(stateTransition)  // S => (A, S)
+    Ref.make(1).flatMap { r =>
+      def freshVar: UIO[String]  = r.modify(stateTransition) // S => (A, S)
+      def freshVar2: UIO[String] = r.modify(stateTransition2)
 
-      v1 <- freshVar
-      _  <- console.putStrLn(s"v1=$v1") // v1=result: 1
-      v2 <- freshVar
-      _  <- console.putStrLn(s"v2=$v2") // v2=result: 4
-      v3 <- r.modify(stateTransition2)
-      _  <- console.putStrLn(s"v3=$v3") // v3=result: 7
-      v4 <- r.modify(stateTransition2)
-      _  <- console.putStrLn(s"v4=$v4") // v4=result: 14
-    } yield ()
+      for {
+        v1 <- freshVar
+        _  <- console.putStrLn(s"v1=$v1") // v1=result: 1
+        v2 <- freshVar
+        _  <- console.putStrLn(s"v2=$v2") // v2=result: 4
+        v3 <- freshVar2
+        _  <- console.putStrLn(s"v3=$v3") // v3=result: 7
+        v4 <- freshVar2
+        _  <- console.putStrLn(s"v4=$v4") // v4=result: 14
+      } yield ()
+    }
   }
 
   override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = myProg3.as[Int](0)
