@@ -3,7 +3,7 @@ package com.github.windbird123.overview
 import java.io.IOException
 import java.net.ServerSocket
 
-import zio.{App, Task, UIO, ZIO}
+import zio.{ App, Task, UIO, ZIO }
 
 import scala.concurrent.Future
 import scala.io.StdIn
@@ -21,7 +21,7 @@ object CreateEffectWithBlocking extends App {
     zOption.mapError(_ => "empty") // ZIO[Any, String, Int]
 
     ZIO.fromEither(Right("S")) // IO[Nothing, String]
-    ZIO.fromEither(Left(1)) // IO[Int, Nothing]
+    ZIO.fromEither(Left(1))    // IO[Int, Nothing]
 
     ZIO.fromTry(Try(1 / 0))
 
@@ -31,14 +31,12 @@ object CreateEffectWithBlocking extends App {
 
     lazy val future = Future.successful("Hello")
     // Task[String]
-    ZIO.fromFuture { implicit ec =>
-      future.map(_ => "Good")
-    }
+    ZIO.fromFuture(implicit ec => future.map(_ => "Good"))
 
     ZIO.effect(StdIn.readLine()) // Task[String]
     ZIO
       .effect(StdIn.readLine())
-      .refineToOrDie[IOException] // if fatal => die, else refineTo IOException
+      .refineToOrDie[IOException]  // if fatal => die, else refineTo IOException
     ZIO.effectTotal(println("Hi")) // UIO[Unit]
 
     // blocking thread pool 에서 실행된다는 의미이지 async 하다는 것은 아니다.
@@ -56,5 +54,27 @@ object CreateEffectWithBlocking extends App {
     zio.blocking.blocking(task) // effect will be executed on the blocking thread pool
 
     ZIO.succeed(0)
+  }
+}
+
+object MemoizeTest extends zio.App {
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
+    val side: UIO[Int] = UIO.succeed {
+      println("UIO ..")
+      3
+    }
+
+    val a = for {
+      m <- side.memoize
+      x <- m
+      y <- m
+    } yield x + y
+
+    val b = for {
+      x <- side
+      y <- side
+    } yield  x + y
+
+    a
   }
 }
