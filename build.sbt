@@ -1,7 +1,8 @@
 name := "zio"
 version := "0.0.1-SNAPSHOT"
 
-scalaVersion := "2.11.12"
+//scalaVersion := "2.11.12"
+scalaVersion := "2.12.10"
 
 scalacOptions := Seq(
   "-encoding",
@@ -25,7 +26,8 @@ libraryDependencies ++= Seq(
   "com.typesafe.scala-logging" %% "scala-logging"  % "3.9.2",
   "org.slf4j"                  % "jcl-over-slf4j"  % "1.7.26",
   "ch.qos.logback"             % "logback-classic" % "1.2.3",
-  "org.scalaj"                 %% "scalaj-http"    % "2.4.2"
+  "org.scalaj"                 %% "scalaj-http"    % "2.4.2",
+  "com.github.pureconfig"      %% "pureconfig"     % "0.12.3"
 )
 testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
 
