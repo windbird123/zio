@@ -8,12 +8,11 @@ import zio._
 object PromiseTest extends zio.App {
   val basicRace: ZIO[Any, String, Int] = for {
     p     <- Promise.make[String, Int]
-    _     <- p.succeed(7).fork  // p.succeed 의 리턴 타입은 Promise 값 설정의 성공 여부를 나타내는 UIO[Boolean] 이다.
+    _     <- p.succeed(7).fork // p.succeed 의 리턴 타입은 Promise 값 설정의 성공 여부를 나타내는 UIO[Boolean] 이다.
     _     <- p.fail("failed").fork
     _     <- p.done(Exit.succeed(3)).fork
     value <- p.await
   } yield value
-
 
   val completeRace: ZIO[Any, String, Int] = for {
     p     <- Promise.make[String, Int]
@@ -29,12 +28,12 @@ object PromiseTest extends zio.App {
     value <- p.await
   } yield value
 
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = {
     val program = for {
       value <- completeWithRace
       _     <- console.putStr(value.toString)
     } yield ()
 
-    program.tapError(s => UIO(println(s))).fold(_ => 1, _ => 0)
+    program.tapError(s => UIO(println(s))).exitCode
   }
 }

@@ -4,13 +4,12 @@ import java.io.{File, FileNotFoundException}
 
 import zio._
 object ErrorHandleRetry extends App {
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = {
     // either or option
     val zEither: UIO[Either[String, Int]] = IO.fail("Failed").either
 
     // opposite of either
     val zAbsolve: IO[String, Int] = zEither.absolve
-
 
     ///////////////////////////////////////////////////////////////////////
     // tapError 와 orElse 를 적극적으로 사용하자. 끝판왕은 foldM
@@ -47,6 +46,6 @@ object ErrorHandleRetry extends App {
       (_: Throwable, _: Int) => Task.succeed(Array.empty[Byte])
     )
 
-    ZIO.succeed(0)
+    UIO(ExitCode.success)
   }
 }

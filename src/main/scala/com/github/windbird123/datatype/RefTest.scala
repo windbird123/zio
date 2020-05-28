@@ -37,14 +37,14 @@ object RefTest extends zio.App with LazyLogging {
     }
   }
 
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = myProg3.as[Int](0)
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = myProg3.exitCode
 }
 
 object RefExternalTest extends zio.App with LazyLogging {
   def f1(ref: Ref[Int]): ZIO[Any, Nothing, String] = ref.modify((state: Int) => (s"result: $state", state + 3))
   def f2(ref: Ref[Int]): ZIO[Any, Nothing, String] = ref.modify((state: Int) => (s"result: $state", state * 2))
 
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = {
     val program: ZIO[Console, Nothing, Unit] = for {
       ref <- Ref.make(1)
 
@@ -58,6 +58,6 @@ object RefExternalTest extends zio.App with LazyLogging {
       _  <- console.putStrLn(s"v4=$v4") // v4=result: 14
     } yield ()
 
-    program.as(0)
+    program.exitCode
   }
 }

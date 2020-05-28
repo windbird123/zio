@@ -3,14 +3,14 @@ package com.github.windbird123.overview
 import java.io.IOException
 import java.net.ServerSocket
 
-import zio.{ App, Task, UIO, ZIO }
+import zio._
 
 import scala.concurrent.Future
 import scala.io.StdIn
 import scala.util.Try
 
 object CreateEffectWithBlocking extends App {
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = {
     ZIO.succeed(10)
     Task.succeed("a")
 
@@ -53,12 +53,12 @@ object CreateEffectWithBlocking extends App {
     val task = Task.effect(scala.io.Source.fromURL("http://..."))
     zio.blocking.blocking(task) // effect will be executed on the blocking thread pool
 
-    ZIO.succeed(0)
+    UIO(ExitCode.success)
   }
 }
 
 object MemoizeTest extends zio.App {
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = {
     val side: UIO[Int] = UIO.succeed {
       println("UIO ..")
       3
@@ -73,8 +73,8 @@ object MemoizeTest extends zio.App {
     val b = for {
       x <- side
       y <- side
-    } yield  x + y
+    } yield x + y
 
-    a
+    a.exitCode
   }
 }

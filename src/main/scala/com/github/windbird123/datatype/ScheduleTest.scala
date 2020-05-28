@@ -40,8 +40,8 @@ object ScheduleTest extends zio.App with LazyLogging {
     case _                   => false
   }
 
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = {
     val startTask = UIO.effectTotal(logger.info("START ============"))
-    startTask *> taskFail.retry(expUpTo4).fold(_ => 0, _ => 1)
+    startTask *> taskFail.retry(expUpTo4).exitCode
   }
 }

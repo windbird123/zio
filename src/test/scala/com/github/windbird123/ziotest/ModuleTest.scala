@@ -2,7 +2,7 @@ package com.github.windbird123.ziotest
 
 import zio.test.Assertion._
 import zio.test.{DefaultRunnableSpec, ZSpec, _}
-import zio.{Has, IO, ZIO, ZLayer, console}
+import zio._
 
 object Roy {
   trait Service {
@@ -14,9 +14,8 @@ object Roy {
 
   val live: ZLayer[Any, Nothing, Has[Roy.Service]] =
     ZLayer.succeed(new Service {
-      override def getCuve(id: Int): IO[String, Double] = {
+      override def getCuve(id: Int): IO[String, Double] =
         IO.succeed(id + 1.0)
-      }
     })
 }
 
@@ -28,9 +27,9 @@ object ServiceLogicBetweenModules {
 }
 
 object AppMain extends zio.App {
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = {
     val layer = Roy.live ++ console.Console.live
-    ServiceLogicBetweenModules.roy.provideLayer(layer).fold(_ => 1, _ => 0)
+    ServiceLogicBetweenModules.roy.provideLayer(layer).exitCode
   }
 }
 

@@ -76,12 +76,12 @@ object FiberFork extends App with LazyLogging {
     b <- blocking.blocking(ioB)
   } yield a + b
 
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = myProg5.fold(_ => 1, _ => 0)
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = myProg5.exitCode
 }
 
 // App provides a DefaultRuntime, which contains a Console
 object ConcurrencyFiber extends App {
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = {
     def fib(n: Long): UIO[Long] =
       UIO.effectTotal {
         if (n <= 1) UIO.succeed(n)
@@ -121,32 +121,32 @@ object ConcurrencyFiber extends App {
       winner <- IO.succeed("Hello").race(IO.succeed("Goodbye"))
     } yield winner
 
-    program *> IO.succeed(0)
+    program.exitCode
   }
 }
 
 object FibTest extends zio.App {
   def fib(n: Long): UIO[Long] = if (n <= 1) UIO.effectTotal(n) else fib(n - 1).zipWith(fib(n - 2))(_ + _)
 
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = {
     val p = for {
       f <- fib(40) // fib(50) 만 되어도 힘들어 한다.
       _ <- zio.console.putStrLn(f.toString)
     } yield ()
 
-    p.as(0)
+    p.exitCode
   }
 }
 
 object FactorialTest extends zio.App {
   def fact(n: BigInt): UIO[BigInt] = if (n <= 1) UIO.effectTotal(1) else UIO.effectTotal(n).zipWith(fact(n - 1))(_ * _)
 
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = {
     val p = for {
       f <- fact(50000)
       _ <- zio.console.putStrLn(f.toString)
     } yield ()
 
-    p.as(0)
+    p.exitCode
   }
 }

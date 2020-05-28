@@ -41,9 +41,6 @@ object HelloWorldSpec extends DefaultRunnableSpec {
       test("passing test") {
         assert(true)(isTrue)
       } @@ timeout(5.seconds),
-      test("failing test") {
-        assert(true)(isFalse)
-      } @@ failure, // failure turns a failing test into a passing test
       test("ignore test") {
         assert(true)(isTrue)
       } @@ ignore

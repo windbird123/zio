@@ -2,7 +2,7 @@ package com.github.windbird123.overview
 
 import com.typesafe.scalalogging.LazyLogging
 import zio.console.Console
-import zio.{Has, ZIO, ZLayer, console}
+import zio._
 
 object ZLayerSimple extends zio.App with LazyLogging {
   val myProg: ZIO[Console with Has[Int], Nothing, Int] = for {
@@ -10,8 +10,8 @@ object ZLayerSimple extends zio.App with LazyLogging {
     _ <- console.putStrLn(s"i=$i")
   } yield i
 
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = {
     val intLayer = ZLayer.succeed(3)
-    myProg.provideSomeLayer[Console](intLayer)
+    myProg.provideSomeLayer[Console](intLayer).exitCode
   }
 }

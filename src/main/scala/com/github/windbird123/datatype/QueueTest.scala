@@ -42,7 +42,7 @@ object QueueTest extends zio.App {
   // Queue#contramap(f: A => B)
   //////////////////////////////////////////////////////////////////////////////////
   val contraQueue = for {
-    intQueue       <- Queue.bounded[Int](3) // Int 타입의 queue 생성
+    intQueue <- Queue.bounded[Int](3) // Int 타입의 queue 생성
 
     // String 타입의 queue 를 생성하는데, intQueue 를 이용해 꺼낼 때는 Int 타입을 가져오도록 ..
     lenQueue100 = intQueue.contramap((s: String) => s.length).map(_ + 100)
@@ -55,10 +55,10 @@ object QueueTest extends zio.App {
     _     <- console.putStrLn(out.toString) // 105
   } yield ()
 
-  import zio.duration._
   import zio.clock._
+  import zio.duration._
 
-  val timeQueued: UIO[ZQueue[Clock, Nothing, Clock, Nothing, String, (Duration, String)]] =
+  val timeQueued: ZIO[Any, Nothing, ZQueue[Clock, Clock, Nothing, Nothing, String, (Duration, String)]] =
     for {
       queue <- Queue.bounded[(Long, String)](3)
 
@@ -78,7 +78,7 @@ object QueueTest extends zio.App {
     _     <- console.putStrLn(out.toString())
   } yield ()
 
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] =
-    contraQueueTest *> UIO.succeed(0)
-//    timeQueueTest *> UIO.succeed(0)
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] =
+//    contraQueue.exitCode
+    timeQueueTest.exitCode
 }

@@ -5,7 +5,7 @@ import java.io.InputStream
 import zio._
 
 object ResourceHandle extends App {
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = {
 
     // The finalizer is not allowed to fail,
     val finalizer = UIO.effectTotal(println("Finalizing!"))
@@ -36,6 +36,6 @@ object ResourceHandle extends App {
     combined.use { case (queue, stream) => IO.unit }
 
     // return
-    ZIO.succeed(0)
+    UIO(ExitCode.success)
   }
 }

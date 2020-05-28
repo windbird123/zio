@@ -30,5 +30,5 @@ object SemaphoreTest extends zio.App {
     _   <- ZIO.collectAllPar(seq)
   } yield ()
 
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = program.as(0)
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = program.exitCode
 }

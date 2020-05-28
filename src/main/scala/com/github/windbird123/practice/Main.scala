@@ -3,7 +3,7 @@ package com.github.windbird123.practice
 import zio._
 
 object Main extends App {
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = myProg
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = myProg.exitCode
 
   val config: Config                 = Config("naver", 123)
   val cuveConnection: CuveConnection = CuveConnection("connect url")

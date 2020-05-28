@@ -31,13 +31,15 @@ object MDCLogging extends zio.App {
     3
   }
 
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = {
     implicit val mdcKey: MDCKey = MDCKey("123")
 
-    for {
+    val prog = for {
       fiber <- program().fork
       y     <- program2()
       x     <- fiber.join
     } yield y
+
+    prog.exitCode
   }
 }

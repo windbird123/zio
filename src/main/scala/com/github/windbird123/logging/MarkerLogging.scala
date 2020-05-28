@@ -10,8 +10,8 @@ object MarkerLogging extends zio.App with LazyLogging {
     3
   }
 
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = {
     implicit val marker: Marker = MarkerFactory.getMarker("12345")
-    program()
+    program().exitCode
   }
 }
