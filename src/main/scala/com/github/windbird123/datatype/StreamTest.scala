@@ -35,8 +35,8 @@ object StreamTest extends zio.App {
   } yield (r, w)
 
   streamFromIteralbe.map { x =>
-    rwResource.use_ {
-      case (r, w) =>  ZIO.unit
+    rwResource.use {
+      case (r, w) =>  UIO(3)
     }
   }
 
