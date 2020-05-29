@@ -20,13 +20,13 @@ object ResourceHandle extends App {
       }
 
     // Managed
-    val managedResource = Managed.make(IO.effect(new FileInputStream("..")))(stream => UIO(stream.close()))
+    val managedResource = IO.effect(new FileInputStream("..")).toManaged(stream => UIO(stream.close()))
     val userResource    = managedResource.use(stream => IO.unit)
 
     // Combining Managed
-    val managed1: Managed[Nothing, Queue[Int]] = Managed.make(Queue.bounded[Int](10))(_.shutdown)
+    val managed1: Managed[Nothing, Queue[Int]] = Queue.bounded[Int](10).toManaged(_.shutdown)
     val managed2: Managed[Throwable, FileInputStream] =
-      Managed.make(IO.effect(new FileInputStream("..")))(stream => UIO(stream.close()))
+      IO.effect(new FileInputStream("..")).toManaged(stream => UIO(stream.close()))
 
     val combined: Managed[Throwable, (Queue[Int], InputStream)] = for {
       queue  <- managed1
