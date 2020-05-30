@@ -20,6 +20,7 @@ val zioVersion = "1.0.0-RC20"
 libraryDependencies ++= Seq(
   "dev.zio"                    %% "zio"            % zioVersion,
   "dev.zio"                    %% "zio-streams"    % zioVersion,
+  "dev.zio"                    %% "zio-macros"     % zioVersion,
   "dev.zio"                    %% "zio-test"       % zioVersion % "test", // https://github.com/zio/zio-intellij/issues/29 ==> use 1.0.0-RC18 version
   "dev.zio"                    %% "zio-test-sbt"   % zioVersion % "test",
   "org.typelevel"              %% "simulacrum"     % "1.0.0",
@@ -33,5 +34,5 @@ testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
 
 addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
 addCompilerPlugin(
-  "org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full
+  "org.scalamacros" % "paradise" % "2.1.1" cross CrossVersion.full
 )
