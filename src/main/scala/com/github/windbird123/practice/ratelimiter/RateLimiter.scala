@@ -5,12 +5,10 @@ import zio.clock.Clock
 import zio.duration.{Duration, _}
 
 object RateLimiter {
-  private def periodFrom(perSecond: Double): Duration = (1.second.toNanos.toDouble / perSecond).toInt.nanos
-
-  def make(perSecond: Double, buffer: Int): ZIO[Clock, Nothing, RateLimiter] = {
+  def make(perSecond: Int, buffer: Int): ZIO[Clock, Nothing, RateLimiter] = {
     require(perSecond > 0 && buffer > 0)
 
-    val period: Duration = periodFrom(perSecond)
+    val period: Duration = (perSecond.seconds.toNanos / buffer).nanos
     for {
       queue <- Queue.bounded[Unit](buffer)
       _     <- queue.take.repeat(Schedule.fixed(period)).fork
@@ -27,7 +25,7 @@ class RateLimiter(queue: Queue[Unit]) {
 object RateLimiterTest extends zio.App {
   override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = {
     val prog = for {
-      limiter <- RateLimiter.make(perSecond = 1.0, buffer = 2)
+      limiter <- RateLimiter.make(perSecond = 1, buffer = 2)
       _       <- ZIO.foreach(1 to 10)(i => limiter.rateLimit(console.putStrLn(i.toString)))
     } yield ()
 
