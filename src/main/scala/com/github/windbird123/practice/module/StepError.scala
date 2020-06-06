@@ -1,4 +1,4 @@
-package com.github.windbird123.practice
+package com.github.windbird123.practice.module
 
 sealed trait StepError {
   val code: Int

@@ -1,6 +1,6 @@
-package com.github.windbird123.practice
+package com.github.windbird123.practice.module
 
-import zio._
+import zio.{Has, IO, ZIO, ZLayer}
 
 object ReadModule {
   trait Service {
