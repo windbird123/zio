@@ -114,7 +114,7 @@ object ConcurrencyFiber extends App {
     // ZIO.foreach ==> Future.traverse 와 비슷
     // ZIO.reduceAll ==> reduce 와 비슷
     // ZIO.mergeAll ==> foldLeft 와 비슷
-    // ZIO.mapN ==> mapWith 와 비슷
+    // ZIO.mapN ==> zipWith 와 비슷
 
     // racing
     for {

@@ -4,7 +4,11 @@ import zio._
 
 class BlockingRateLimiter(perSecond: Int, buffer: Int) {
   private val runtime: Runtime[zio.ZEnv] = Runtime.default
-  private val rateLimiter: RateLimiter   = runtime.unsafeRun(RateLimiter.make(perSecond, buffer))
+  private val rateLimiter: RateLimiter = {
+    val limiter: RateLimiter = runtime.unsafeRun(RateLimiter.make(perSecond, buffer))
+    runtime.unsafeRunToFuture(limiter.feedTokenPeriodically())
+    limiter
+  }
 
   def rateLimit[T](body: => T): T =
     runtime.unsafeRun(rateLimiter.rateLimit(blocking.effectBlocking(body)))
