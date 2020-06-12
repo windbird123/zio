@@ -1,4 +1,5 @@
-package com.github.windbird123.practice.ratelimiter
+package com.github.windbird123.ratelimiter
+
 import zio._
 
 import scala.concurrent.{Await, Future}

@@ -1,4 +1,4 @@
-package com.github.windbird123.practice.ratelimiter
+package com.github.windbird123.ratelimiter
 
 import zio._
 
