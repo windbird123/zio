@@ -18,7 +18,7 @@ object RateLimiter {
 }
 
 class RateLimiter(queue: Queue[Unit], period: Duration) {
-  def feedTokenPeriodically(): ZIO[Clock, Nothing, Int]         = queue.take.repeat(Schedule.fixed(period))
+  def feedTokenPeriodically(): ZIO[Clock, Nothing, Long]         = queue.take.repeat(Schedule.fixed(period))
   def rateLimit[R, E, A](effect: => ZIO[R, E, A]): ZIO[R, E, A] = queue.offer(()) *> effect
 }
 

@@ -16,7 +16,6 @@ object ScheduleTest extends zio.App with LazyLogging {
   }
 
   val forever     = Schedule.forever
-  val never       = Schedule.never
   val upTo10      = Schedule.recurs(10)
   val spaced      = Schedule.spaced(10.seconds)
   val exponential = Schedule.exponential(1.second)
@@ -35,7 +34,7 @@ object ScheduleTest extends zio.App with LazyLogging {
   import scala.concurrent.TimeoutException
 
   // 이걸 많이 쓰게 될 것 같다.
-  val whileTimeout = Schedule.spaced(2.seconds) && Schedule.recurs(3) && Schedule.doWhile[Exception] {
+  val whileTimeout = Schedule.spaced(2.seconds) && Schedule.recurs(3) && Schedule.recurWhile[Exception] {
     case _: TimeoutException => true
     case _                   => false
   }

@@ -3,6 +3,7 @@ package com.github.windbird123.overview
 import java.io.{File, FileNotFoundException}
 
 import zio._
+import zio.clock.Clock
 object ErrorHandleRetry extends App {
   override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = {
     // either or option
@@ -43,7 +44,7 @@ object ErrorHandleRetry extends App {
     // retryOrElse, retryOrElseEither
     retriedOpenFile.retryOrElse(
       Schedule.recurs(5), // retry policy 에 관해서는 datatype 의 Schedule 을 더 볼 것
-      (_: Throwable, _: Int) => Task.succeed(Array.empty[Byte])
+      (_: Throwable, _: Long) => Task.succeed(Array.empty[Byte])
     )
 
     UIO(ExitCode.success)
