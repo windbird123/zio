@@ -81,6 +81,18 @@ object FiberFork extends App with LazyLogging {
 
 // App provides a DefaultRuntime, which contains a Console
 object ConcurrencyFiber extends App {
+  def sum(list: List[Int]): UIO[Int] = UIO {
+    list match {
+      case Nil          => UIO(0)
+      case head :: tail => sum(tail).map(_ + head)
+    }
+  }.flatten
+
+  def sum2(list: List[Int]): UIO[Int] = ZIO.ifM(UIO(list.isEmpty))(
+    UIO(0),
+    sum(list.tail).map(_ + list.head)
+  )
+
   override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = {
     def fib(n: Long): UIO[Long] =
       UIO.effectTotal {

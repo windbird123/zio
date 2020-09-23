@@ -15,7 +15,7 @@ scalacOptions := Seq(
   "-language:implicitConversions"
 )
 
-val zioVersion = "1.0.0"
+val zioVersion = "1.0.1"
 
 libraryDependencies ++= Seq(
   "dev.zio"                    %% "zio"            % zioVersion,
