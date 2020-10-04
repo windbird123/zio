@@ -28,7 +28,8 @@ libraryDependencies ++= Seq(
   "org.slf4j"                  % "jcl-over-slf4j"  % "1.7.26",
   "ch.qos.logback"             % "logback-classic" % "1.2.3",
   "org.scalaj"                 %% "scalaj-http"    % "2.4.2",
-  "com.github.pureconfig"      %% "pureconfig"     % "0.12.3"
+  "com.github.pureconfig"      %% "pureconfig"     % "0.12.3",
+  "com.rabbitmq"               % "amqp-client"     % "5.9.0"
 )
 testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
 

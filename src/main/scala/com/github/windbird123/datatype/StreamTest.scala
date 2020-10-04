@@ -6,6 +6,7 @@ import zio._
 import zio.stream._
 
 import scala.io.{ BufferedSource, Codec, Source }
+import zio.duration._
 
 // https://dev.to/gurghet/10-days-with-the-zio-2-10-4jpg 를 참고하자
 object StreamTest extends zio.App {
@@ -36,25 +37,19 @@ object StreamTest extends zio.App {
 
   streamFromIteralbe.map { x =>
     rwResource.use {
-      case (r, w) =>  UIO(3)
+      case (r, w) => UIO(3)
     }
   }
 
-//  val sink                                     = Sink.await[Int]
-//  streamFromIteralbe.run(sink)
-//
-//  // consume a stream
-//  Stream.fromIterable(0 to 100).foreach(i => console.putStrLn(i.toString))
-//  Stream(1, 2, 3).run(Sink.foldLeft(0)((acc: Int, x: Int) => acc + x))
-//
-//  // working on several streams
-//  val merged: ZStream[Any, Nothing, Int]        = Stream(1, 2, 3).merge(Stream(4, 5, 6))
-//  val zipped: ZStream[Any, Nothing, (Int, Int)] = Stream(1, 2, 3).zip(Stream(4, 5, 6))
-//
-//  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, Int] = {
-//    val myProg = streamFromIteralbe.foreach((x: Int) => console.putStrLn(x.toString)) // 순서대로 출력됨
-////    val myProg = merged.foreach( (x: Int) => console.putStrLn(x.toString))  // 1,2,3,4,5,6 출력이 순서대로 보장되는 것은 아님 !!!
-//    myProg.as(0)
-//  }
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = UIO(ExitCode.success)
+  val myTest = for {
+    queue  <- Queue.bounded[Int](100)
+    _      <- queue.offer(1)
+    _      <- queue.offer(2)
+    fiber  <- queue.offer(99).repeat(Schedule.fixed(1.second)).fork
+    stream = ZStream.fromQueue(queue)
+    _      <- stream.mapM(number => UIO(println(s"Number: $number"))).runDrain
+    _      <- fiber.await
+  } yield ()
+
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = myTest.exitCode
 }
