@@ -1,6 +1,4 @@
-package com.github.windbird123.encoding.declarative
-
-import com.github.windbird123.encoding.executable.EmailFilter
+package com.github.windbird123.encoding.declarative.fullversion
 
 // https://degoes.net/articles/functional-design
 
