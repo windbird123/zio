@@ -7,7 +7,7 @@ import zio.blocking.Blocking
 
 object ClientTest extends zio.App {
   val safeChannelM: ZManaged[Blocking, Throwable, SafeChannel] = for {
-    connection <- Amqp.connect(new URI("amqp://tala:fkdlsdnpqxkffk@wse-rabbitmq.dev.linecorp.com:5672"))
+    connection <- Amqp.connect(new URI("amqp://wse-rabbitmq.dev.linecorp.com:5672"))
     channel    <- Amqp.createChannel(connection)
   } yield channel
 
