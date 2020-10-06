@@ -3,16 +3,28 @@ package com.github.windbird123.datatype
 import java.io.{ File, PrintWriter }
 
 import zio._
+import zio.clock.Clock
 import zio.stream._
 
 import scala.io.{ BufferedSource, Codec, Source }
 import zio.duration._
 
-// https://dev.to/gurghet/10-days-with-the-zio-2-10-4jpg 를 참고하자
 object StreamTest extends zio.App {
   // create stream
   val stream: Stream[Nothing, Int]             = Stream(1, 2, 3)
   val streamFromIteralbe: Stream[Nothing, Int] = Stream.fromIterable(0 to 100)
+
+  // multi processing
+  val multi: ZIO[Any with Clock, Nothing, Unit] = Stream
+    .fromIterable(1 to 10)
+    .mapMPar(5)(x => UIO(x * 2).delay(1.second))
+    .foreach(x => UIO(println(x)))
+
+  val multi2: ZIO[Any, Nothing, Unit] = Stream
+    .fromIterable(1 to 10)
+    .mapMPar(5)(x => UIO(x * 2))
+    .fold(0)((s, x) => s + x)
+    .map(x => println(x))
 
   // map
   val stringStream: Stream[Nothing, String] = streamFromIteralbe.map(_.toString)
@@ -51,5 +63,5 @@ object StreamTest extends zio.App {
     _      <- fiber.await
   } yield ()
 
-  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = myTest.exitCode
+  override def run(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = multi2.exitCode
 }
