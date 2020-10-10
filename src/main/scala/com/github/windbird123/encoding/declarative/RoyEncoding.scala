@@ -7,8 +7,18 @@ sealed trait Step { self =>
 
   def pass(box: Box): Box = self match {
     case Join(prev, next) => next.pass(prev.pass(box))
-    case FaceStep(name)   => Box(s"${box.name} >> $name")
-    case OcrStep(name)    => Box(s"${box.name} >> $name")
+
+    case FaceStep(name) =>
+      canHandle(box) match {
+        case true  => Box(s"${box.name} >> $name")
+        case false => box
+      }
+
+    case OcrStep(name) =>
+      canHandle(box) match {
+        case true  => Box(s"${box.name} >> $name")
+        case false => box
+      }
   }
 
   def canHandle(box: Box): Boolean = self match {
@@ -29,12 +39,12 @@ object Test {
     val ocrStep  = OcrStep("Ocr")
 
     val step = faceStep >> ocrStep
-    val box  = Box("target: Face Ocr")
+    val box  = Box("target: [Face Ocr]")
 
     val out = step.pass(box)
     println(out)
 
-    val seq = Seq(faceStep, ocrStep)
+    val seq      = Seq(faceStep, ocrStep)
     val filtered = seq.filter(_.canHandle(box))
     println(filtered)
   }
