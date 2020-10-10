@@ -1,38 +1,41 @@
 package com.github.windbird123.encoding.declarative
 
-case class Box(id: String)
+case class Box(name: String)
 
-/////////////////////////////////////////////////////////////////
 sealed trait Step { self =>
-  def >>(that: Step): Step = Proceed(self, that)
-}
+  def >>(that: Step): Step = Join(self, that)
 
-final case class Proceed(prev: Step, next: Step) extends Step
+  def pass(box: Box): Box = self match {
+    case Join(prev, next) => next.pass(prev.pass(box))
+    case FaceStep(name)   => Box(s"${box.name} >> $name")
+    case OcrStep(name)    => Box(s"${box.name} >> $name")
+  }
 
-final case class FaceStep(id: String) extends Step {
-  def detect(box: Box): Box = Box(s"${box.id} >> $id")
-}
-
-final case class OcrStep(id: String) extends Step {
-  def detect(box: Box): Box = Box(s"${box.id} >> $id")
-}
-/////////////////////////////////////////////////////////////////
-
-object StepUtil {
-  def pass(step: Step, box: Box): Box = step match {
-    case Proceed(prev, next) => pass(next, pass(prev, box)) // Step 의 composition 을 위해 !!!
-    case step @ FaceStep(_)  => step.detect(box)
-    case step @ OcrStep(_)   => step.detect(box)
+  def canHandle(box: Box): Boolean = self match {
+    case Join(prev, next) => prev.canHandle(box) || next.canHandle(box)
+    case FaceStep(name)   => box.name.contains(name)
+    case OcrStep(name)    => box.name.contains(name)
   }
 }
 
+final case class Join(prev: Step, next: Step) extends Step
 
-object RoyEncoding {
+final case class FaceStep(name: String) extends Step
+final case class OcrStep(name: String)  extends Step
+
+object Test {
   def main(args: Array[String]): Unit = {
-    val initialBox = Box("initialBox")
-    val step       = FaceStep("face") >> OcrStep("ocr")
+    val faceStep = FaceStep("Face")
+    val ocrStep  = OcrStep("Ocr")
 
-    val outputBox = StepUtil.pass(step, initialBox)
-    println(outputBox.id)
+    val step = faceStep >> ocrStep
+    val box  = Box("target: Face Ocr")
+
+    val out = step.pass(box)
+    println(out)
+
+    val seq = Seq(faceStep, ocrStep)
+    val filtered = seq.filter(_.canHandle(box))
+    println(filtered)
   }
 }
