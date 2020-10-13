@@ -26,6 +26,18 @@ object StreamTest extends zio.App {
     .fold(0)((s, x) => s + x)
     .map(x => println(x))
 
+
+  ZStream
+      .fromFile(
+        new File(
+          "my path"
+        ).toPath
+      )
+      .transduce(ZTransducer.utf8Decode)
+      .transduce(ZTransducer.splitLines)
+      .mapM(s => UIO(s))
+      .runDrain
+
   // map
   val stringStream: Stream[Nothing, String] = streamFromIteralbe.map(_.toString)
 
