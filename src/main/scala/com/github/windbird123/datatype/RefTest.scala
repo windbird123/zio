@@ -61,3 +61,27 @@ object RefExternalTest extends zio.App with LazyLogging {
     program.exitCode
   }
 }
+
+object MyUtil {
+  trait Service {
+    def inc(): UIO[Int]
+  }
+
+  def inc(): ZIO[Has[Ref[Int]], Nothing, String] =
+    ZIO.accessM(_.get[Ref[Int]].modify[String](x => ((x + 1).toString, x + 1)))
+
+  val live: ZLayer[Any, Nothing, Has[Ref[Int]]] = Ref.make(0).toLayer
+}
+
+object RefWithZLayer extends zio.App {
+  val logic: ZIO[Console with Has[Ref[Int]], Nothing, Unit] = for {
+    v1 <- MyUtil.inc()
+    _  <- console.putStrLn(v1)
+
+    v2 <- MyUtil.inc()
+    _  <- console.putStrLn(v2)
+  } yield ()
+
+  override def run(args: List[String]): URIO[zio.ZEnv, ExitCode] =
+    logic.provideCustomLayer(MyUtil.live).exitCode
+}
