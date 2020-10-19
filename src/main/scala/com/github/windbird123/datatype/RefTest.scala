@@ -64,24 +64,30 @@ object RefExternalTest extends zio.App with LazyLogging {
 
 object MyUtil {
   trait Service {
-    def inc(): UIO[Int]
+    def inc(): UIO[String]
   }
 
-  def inc(): ZIO[Has[Ref[Int]], Nothing, String] =
-    ZIO.accessM(_.get[Ref[Int]].modify[String](x => ((x + 1).toString, x + 1)))
+  def inc(): ZIO[Has[Service], Nothing, String] = ZIO.accessM(_.get[Service].inc())
 
-  val live: ZLayer[Any, Nothing, Has[Ref[Int]]] = Ref.make(0).toLayer
+  val live: ZLayer[Has[Ref[Int]], Nothing, Has[Service]] =
+    ZLayer.fromService((ref: Ref[Int]) =>
+      new Service {
+        override def inc(): UIO[String] = ref.modify[String](x => ((x + 1).toString, x + 1))
+      }
+    )
 }
 
 object RefWithZLayer extends zio.App {
-  val logic: ZIO[Console with Has[Ref[Int]], Nothing, Unit] = for {
+  val logic: ZIO[Console with Has[MyUtil.Service], Nothing, Unit] = for {
     v1 <- MyUtil.inc()
     _  <- console.putStrLn(v1)
-
     v2 <- MyUtil.inc()
     _  <- console.putStrLn(v2)
   } yield ()
 
-  override def run(args: List[String]): URIO[zio.ZEnv, ExitCode] =
-    logic.provideCustomLayer(MyUtil.live).exitCode
+  override def run(args: List[String]): URIO[zio.ZEnv, ExitCode] = {
+    val refLayer                                         = Ref.make(0).toLayer
+    val layer: ZLayer[Any, Nothing, Has[MyUtil.Service]] = refLayer >>> MyUtil.live
+    logic.provideCustomLayer(layer).exitCode
+  }
 }
