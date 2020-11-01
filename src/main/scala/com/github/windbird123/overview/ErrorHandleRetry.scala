@@ -12,6 +12,13 @@ object ErrorHandleRetry extends App {
     // opposite of either
     val zAbsolve: IO[String, Int] = zEither.absolve
 
+
+    trait DBError
+    val lookupDB : IO[DBError, Option[String]] = ???
+
+    // lookupDB 의 결과가 None 일 경우, 이를 Error 쪽에 포함되도록 한다.
+    val dbSome: ZIO[Any, Option[DBError], String] = lookupDB.some
+
     ///////////////////////////////////////////////////////////////////////
     // tapError 와 orElse 를 적극적으로 사용하자. 끝판왕은 foldM
     // error recover 를 위해서는 catchSome, catchAll 사용
