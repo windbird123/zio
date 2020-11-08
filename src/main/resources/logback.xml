@@ -15,8 +15,30 @@
         </encoder>
     </appender>
 
+    <appender name="WITH_LISTENER" class="net.logstash.logback.appender.LoggingEventAsyncDisruptorAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <timestampPattern>yyyy-MM-dd'T'HH:mm:ss.SSSZZ</timestampPattern>
+            <messageSplitRegex>UNIX</messageSplitRegex>
+            <shortenedLoggerNameLength>1</shortenedLoggerNameLength>
+            <fieldNames>
+                <timestamp>timestamp</timestamp>
+                <message>message</message>
+                <version>[ignore]</version>
+                <levelValue>[ignore]</levelValue>
+                <!--                <mdc>context</mdc>-->
+            </fieldNames>
+            <arguments>
+
+            </arguments>
+        </encoder>
+
+        <listener class="com.github.windbird123.MyAppenderListener"/>
+    </appender>
+
+
     <!-- Root Logger -->
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
+        <appender-ref ref="WITH_LISTENER"/>
     </root>
 </configuration>
