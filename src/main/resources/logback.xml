@@ -1,8 +1,17 @@
 <configuration>
     <!-- Console Appender -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <pattern>%date{yyyy-MM-dd HH:mm:ss.SSS}\t[%thread]\t%level\t%X{requestId}\t%marker\t%msg%n</pattern>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <timestampPattern>yyyy-MM-dd'T'HH:mm:ss.SSSZZ</timestampPattern>
+            <messageSplitRegex>UNIX</messageSplitRegex>
+            <shortenedLoggerNameLength>1</shortenedLoggerNameLength>
+            <fieldNames>
+                <timestamp>timestamp</timestamp>
+                <message>message</message>
+                <version>[ignore]</version>
+                <levelValue>[ignore]</levelValue>
+<!--                <mdc>context</mdc>-->
+            </fieldNames>
         </encoder>
     </appender>
 
