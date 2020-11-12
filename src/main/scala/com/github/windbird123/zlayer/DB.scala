@@ -17,4 +17,15 @@ object DB {
         }
       }
   }
+
+  val live2: ZLayer[Has[ConnectionPool], Throwable, Has[Service]] = ZIO
+    .access[Has[ConnectionPool]] { env =>
+      lazy val connectionPool = env.get[ConnectionPool]
+      new Service {
+        override def execute(sql: String): Task[Unit] = Task.effect {
+          println(s"running: $sql on connection ${connectionPool.name}")
+        }
+      }
+    }
+    .toLayer
 }
