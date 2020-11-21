@@ -18,4 +18,21 @@ object Main extends zio.App {
 
     program.provideLayer(userRegistrationLayer).map(u => println(s"Registered user: $u (layers)")).exitCode
   }
+
+  def runAlternative(args: List[String]): ZIO[zio.ZEnv, Nothing, ExitCode] = {
+
+    val dbLayer: ZLayer[Any, Throwable, Has[DB.Service]] =
+      ZLayer.succeed(DBConfig("jdbc://localhost")) >>> ConnectionPool.live >>> DB.live
+
+    val program = ZIO.accessM[Has[DB.Service]] { env =>
+      Task.effect {
+        lazy val userModel        = new DefaultUserModel(env.get[DB.Service])
+        lazy val userRegistration = new UserRegistration(DefaultUserNotifier, userModel)
+        userRegistration.register(User("kim", "wind@gmail.com"))
+      }
+    }
+
+    program.provideCustomLayer(dbLayer).map(u => println(s"Registered user: $u (layers)")).exitCode
+
+  }
 }
