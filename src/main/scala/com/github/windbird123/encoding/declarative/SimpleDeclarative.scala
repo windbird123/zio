@@ -32,8 +32,8 @@ object MyEncoding {
   def main(args: Array[String]): Unit = {
     val email = Email("My Subject")
 
-    val emailFilter = ContainFilter("My") && ContainFilter("Subject") && LengthFilter(3)
-    val out         = Seq(email).filter(email => emailFilter.matches(email))
+    val myFilter = ContainFilter("My") && ContainFilter("Subject") && LengthFilter(3)
+    val out         = Seq(email).filter(email => myFilter.matches(email))
     println(out)
   }
 }
