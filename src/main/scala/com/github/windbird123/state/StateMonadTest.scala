@@ -37,6 +37,12 @@ object StateMonadTest {
       total <- swing(1)
     } yield total
 
+    val logic2 = swing(15).flatMap{ x =>
+      swing(10).flatMap{ y =>
+        swing(1).map(z => z)
+      }
+    }
+
     val out = logic.run(initialState)
     println(out)
   }
