@@ -1,4 +1,4 @@
-package com.github.windbird123
+package com.github.windbird123.chore
 
 case class Player(name: String, score: Int)
 
