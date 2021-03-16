@@ -22,7 +22,7 @@ case class My[+A, -B]() {
 sealed trait FuncParam[+A, +B] {
   // 아래 flatMap 은 문제 발생 why?
 
-  // def flatMap[C](f: B => Sum[A, C]): Sum[A, C] = ???
+  // def flatMap[C](f: B => FuncParam[A, C]): FuncParam[A, C] = ???
 
   // f 는 함수의 인자로 contravariant 위치에 있다.
   // f 는 B => Sum[A, C] 의 supertype 이 되어야 한다.
