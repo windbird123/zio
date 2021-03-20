@@ -12,16 +12,16 @@ package com.github.windbird123.encoding
 object CurrencyTestV1 {
   sealed trait Currency[T <: Currency[T]] { self =>
     def amount: Long
-    def make(x: Long): Currency[T]
-    def +(that: Currency[T]): Currency[T] = make(self.amount + that.amount)
+    def make(x: Long): T
+    def +(that: T): T = make(self.amount + that.amount)
   }
 
   case class Dollar(amount: Long) extends Currency[Dollar] {
-    override def make(x: Long): Currency[Dollar] = Dollar(x)
+    override def make(x: Long): Dollar = Dollar(x)
   }
 
   case class Won(amount: Long) extends Currency[Won] {
-    override def make(x: Long): Currency[Won] = Won(x)
+    override def make(x: Long): Won = Won(x)
   }
 
 
