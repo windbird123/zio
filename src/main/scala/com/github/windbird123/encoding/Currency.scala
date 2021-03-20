@@ -1,7 +1,7 @@
 package com.github.windbird123.encoding
 
 /*
- "Programming in Scala" 20 장 추상멤버 내용
+ "Programming in Scala" 20 장 추상멤버 내용을 변형해서 작성해 봄
 
   Currency 에 Dollar 와 Won 이 있다.
   Dollar + Dollar, Won + Won 은 가능해도
