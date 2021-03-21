@@ -37,7 +37,7 @@ object CurrencyTestV1 {
 
     println("won: " + w.amount)
 
-    // 아래와 같이 dollar 와 won 의 덧셈은 실패해야 한다.
+    // 아래와 같이 dollar 와 won 의 덧셈은 실패해야 한다. (컴파일 할 때 실패)
 //    val wrong = d + w
 //    println(wrong)
   }
