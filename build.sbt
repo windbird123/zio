@@ -18,19 +18,20 @@ scalacOptions := Seq(
 val zioVersion = "1.0.1"
 
 libraryDependencies ++= Seq(
-  "dev.zio"                    %% "zio"                     % zioVersion,
-  "dev.zio"                    %% "zio-streams"             % zioVersion,
-  "dev.zio"                    %% "zio-macros"              % zioVersion,
-  "dev.zio"                    %% "zio-test"                % zioVersion % "test",
-  "dev.zio"                    %% "zio-test-sbt"            % zioVersion % "test",
-  "org.typelevel"              %% "simulacrum"              % "1.0.0",
-  "com.typesafe.scala-logging" %% "scala-logging"           % "3.9.2",
-  "ch.qos.logback"             % "logback-classic"          % "1.2.3",
+  "dev.zio"                    %% "zio"            % zioVersion,
+  "dev.zio"                    %% "zio-streams"    % zioVersion,
+  "dev.zio"                    %% "zio-macros"     % zioVersion,
+  "dev.zio"                    %% "zio-test"       % zioVersion % "test",
+  "dev.zio"                    %% "zio-test-sbt"   % zioVersion % "test",
+  "org.typelevel"              %% "simulacrum"     % "1.0.0",
+  "com.typesafe.scala-logging" %% "scala-logging"  % "3.9.2",
+  "ch.qos.logback"             % "logback-classic" % "1.2.3",
 //  "ch.qos.logback"             % "logback-access"           % "1.2.3",
-  "net.logstash.logback"       % "logstash-logback-encoder" % "6.4",
-  "org.scalaj"                 %% "scalaj-http"             % "2.4.2",
-  "com.github.pureconfig"      %% "pureconfig"              % "0.12.3",
-  "com.rabbitmq"               % "amqp-client"              % "5.9.0"
+  "net.logstash.logback"  % "logstash-logback-encoder" % "6.4",
+  "org.scalaj"            %% "scalaj-http"             % "2.4.2",
+  "com.github.pureconfig" %% "pureconfig"              % "0.12.3",
+  "com.rabbitmq"          % "amqp-client"              % "5.9.0",
+  "com.lihaoyi"           %% "scalatags"               % "0.8.2"
 )
 testFrameworks += new TestFramework("zio.test.sbt.ZTestFramework")
 
