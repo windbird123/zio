@@ -3,8 +3,10 @@ package com.github.windbird123.demo
 import zio._
 import zio.console.Console
 
+import java.io.IOException
+
 object QueueFiberDemo extends zio.App {
-  val logic: ZIO[Console, Nothing, Unit] = for {
+  val logic: ZIO[Console, IOException, Unit] = for {
     queue <- Queue.bounded[Int](1)
     _     <- queue.offer(1)
     fiber <- queue.offer(2).fork

@@ -15,7 +15,7 @@ scalacOptions := Seq(
   "-language:implicitConversions"
 )
 
-val zioVersion = "1.0.1"
+val zioVersion = "1.0.9"
 
 libraryDependencies ++= Seq(
   "dev.zio"                    %% "zio"            % zioVersion,
@@ -23,6 +23,7 @@ libraryDependencies ++= Seq(
   "dev.zio"                    %% "zio-macros"     % zioVersion,
   "dev.zio"                    %% "zio-test"       % zioVersion % "test",
   "dev.zio"                    %% "zio-test-sbt"   % zioVersion % "test",
+  "io.github.kitlangton"       %% "zio-magic"      % "0.3.5",
   "org.typelevel"              %% "simulacrum"     % "1.0.0",
   "com.typesafe.scala-logging" %% "scala-logging"  % "3.9.2",
   "ch.qos.logback"             % "logback-classic" % "1.2.3",

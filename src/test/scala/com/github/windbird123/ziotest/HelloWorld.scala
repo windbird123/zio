@@ -8,10 +8,12 @@ import zio.test._
 import zio.test.environment.TestConsole
 import zio.{ZIO, console}
 
+import java.io.IOException
+
 // https://github.com/zio/zio-intellij/issues/29 이슈
 // java8 을 쓸려면 zio 1.0.0-RC18 버전을 써야 한다
 object HelloWorld {
-  def sayHello: ZIO[Console, Nothing, Unit] = console.putStrLn("Hello, World!")
+  def sayHello: ZIO[Console, Nothing, Unit] = console.putStrLn("Hello, World!").ignore
 }
 
 object HelloWorldSpec extends DefaultRunnableSpec {
@@ -33,7 +35,7 @@ object HelloWorldSpec extends DefaultRunnableSpec {
         assert((x + y) + z)(equalTo(x + (y + z)))
       }
     }) @@ around(zio.console.putStrLn("BEFORE"))(
-      _ => zio.console.putStrLn("AFTER")
+      _ => zio.console.putStrLn("AFTER").ignore
     )
 
   val aspectSuite =
@@ -44,8 +46,8 @@ object HelloWorldSpec extends DefaultRunnableSpec {
       test("ignore test") {
         assert(true)(isTrue)
       } @@ ignore
-    ) @@ before(zio.console.putStrLn("starts test =========")) @@ after(
-      zio.console.putStrLn("finish test =====")
+    ) @@ before(zio.console.putStrLn("starts test =========").ignore) @@ after(
+      zio.console.putStrLn("finish test =====").ignore
     )
 
   ////////////////////////////////////////////////////////////////////////////////////
