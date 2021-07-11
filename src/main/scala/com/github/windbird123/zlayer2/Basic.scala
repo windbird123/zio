@@ -1,11 +1,11 @@
-package com.github.windbird123
+package com.github.windbird123.zlayer2
 
-import zio._
-import zio.clock._
-import zio.console._
+import zio.clock.Clock
+import zio.console.Console
 import zio.magic._
+import zio.{App, ExitCode, Has, UIO, URIO, URLayer, ZIO}
 
-object ZLayer2 extends App {
+object Basic extends App {
   trait Logging {
     def log(line: String): UIO[Unit]
   }
