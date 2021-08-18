@@ -11,15 +11,16 @@ object Basic extends App {
   }
 
   object Logging {
-    // ZStream 일 경우 ZIO.serviceWith 대신에
+    // URIO 가 아닌 ZStream 일 경우 ZIO.serviceWith 대신에
     // ZStream.accessStream(_.get.XXX) 사용
     def log(line: String): URIO[Has[Logging], Unit] = ZIO.serviceWith[Logging](_.log(line))
 
-    // layer 의 타입은
-    // ZLayer[Has[Console.Service] with Has[Clock.Service], Nothing, Has[Console.Service] with Has[Clock.Service ] with Has[Ref[Long]]]
-    val layer = ZLayer.identity[Has[Console.Service] with Has[Clock.Service]] ++ Ref.make(0L).toLayer
-    val live: URLayer[Has[Console.Service] with Has[Clock.Service], Has[Logging]] =
-      layer >>> LoggingLive.toLayer[Logging]
+    val refLayer: ZLayer[Any, Nothing, Has[Ref[Long]]] = Ref.make(0L).toLayer
+    val fullLayer: URLayer[Has[Console.Service] with Has[Clock.Service] with Has[Ref[Long]], Has[Logging]] =
+      LoggingLive.toLayer[Logging]
+
+    val live: ZLayer[Has[Console.Service] with Has[Clock.Service], Nothing, Has[Logging]] =
+      ZLayer.wireSome[Has[Console.Service] with Has[Clock.Service], Has[Logging]](refLayer, fullLayer)
   }
 
   case class LoggingLive(console: Console.Service, clock: Clock.Service, ref: Ref[Long]) extends Logging {
@@ -27,7 +28,7 @@ object Basic extends App {
       for {
         current <- clock.currentDateTime.orDie
         count   <- ref.modify(x => (x + 1, x + 1))
-        _       <- console.putStrLn(current.toString + s":$count " + line).orDie
+        _       <- console.putStrLn(current.toString + s": [$count] " + line).orDie
       } yield ()
   }
 
